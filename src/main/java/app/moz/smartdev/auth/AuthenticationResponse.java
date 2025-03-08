@@ -1,26 +1,28 @@
-package app.moz.smartdev.dtos;
+package app.moz.smartdev.auth;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import app.moz.smartdev.dtos.RolesDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.UUID;
 
-
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class UserDto {
+public class AuthenticationResponse {
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
     private UUID id;
 
     private String email;
 
     private String username;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String password;
 
     private  String profilePicture;
@@ -29,12 +31,14 @@ public class UserDto {
 
     private UUID roleId;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
     private List<RolesDto> roles;
 
     private String token;
 
     private String refresh_token;
+
+    private  String message;
 
 
 }

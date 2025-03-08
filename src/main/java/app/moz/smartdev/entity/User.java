@@ -2,136 +2,92 @@ package app.moz.smartdev.entity;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 
 @Entity
+@Data
 
 @Table(name = "users")
-public class User {
+@Builder
+@AllArgsConstructor
+public class User implements UserDetails {
 
 
     @Id
-@GeneratedValue
-private UUID id;
+    @GeneratedValue
+    private UUID id;
 
-@Column(unique = true, nullable = false)
- private  String username;
+    @Column(unique = true, nullable = false)
+    private String username;
 
 
-private String password;
+    private String password;
 
-@Column(nullable = false, unique = true)
-private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-@Column(name = "profile_picture")
-private String profilePicture;
+    @Column(name = "profile_picture")
+    private String profilePicture;
 
-@Column(name = "created_at", updatable = false)
-@CreationTimestamp
-private String createdAt;
+    @Column(name = "created_at", updatable = false)
+    @CreationTimestamp
+    private String createdAt;
 
-@UpdateTimestamp
-private String updatedAt;
+    @UpdateTimestamp
+    private String updatedAt;
 
-@Column(nullable = false)
-private String status = "ACTIVE";
+    @Column(nullable = false)
+    private String status = "ACTIVE";
 
-@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProfile userProfile;
-@ManyToMany(fetch = FetchType.LAZY)
-@JoinTable(name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ManyToMany(fetch = FetchType.LAZY)
 
-   private Set<Role> roles = new HashSet<>();
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
 
-    public UUID getId() {
-        return id;
+    private Set<Role> roles = new HashSet<>();
+
+    private String token;
+
+    private String refresh_token;
+
+
+    public User() {
+
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
     }
 
-    public String getUsername() {
-        return username;
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
     }
 
-    public String getPassword() {
-        return password;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
     }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public UserProfile getUserProfile() {
-        return userProfile;
-    }
-
-    public void setUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
 }
 
