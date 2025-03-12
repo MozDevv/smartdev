@@ -25,7 +25,7 @@ public class AuthenticationResponse {
 
     private String password;
 
-    private  String profilePicture;
+    private String profilePicture;
 
     private String status;
 
@@ -38,7 +38,9 @@ public class AuthenticationResponse {
 
     private String refresh_token;
 
-    private  String message;
+    private String message;
+
+    private String activationCode;
 
 
 }

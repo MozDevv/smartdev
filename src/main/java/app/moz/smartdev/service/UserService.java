@@ -18,6 +18,7 @@ public interface UserService {
 
     void delete(String id);
 
+    String activateAccount(String activationCode);
 
 
 }

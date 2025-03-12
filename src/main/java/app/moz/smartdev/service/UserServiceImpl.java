@@ -30,6 +30,17 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
+    public String activateAccount(String activationCode) {
+        return userRepository.findByActivationCode(activationCode)
+                .map(user -> {
+                    user.setStatus("ACTIVE");
+                    userRepository.save(user);
+                    return "Account activated successfully";
+                })
+                .orElse("Account not found");
+    }
+
+
     @Override
     public UserDto findById(String id) {
         return null;
@@ -47,11 +58,11 @@ public class UserServiceImpl implements UserService {
 
         user.setEmail(userDto.getEmail());
         user.setUsername(userDto.getUsername());
-       // user.setPassword(userDto.getPassword());
+        // user.setPassword(userDto.getPassword());
         user.setProfilePicture(userDto.getProfilePicture());
         user.setStatus(userDto.getStatus());
 
-        if(userDto.getRoleId() != null) {
+        if (userDto.getRoleId() != null) {
             Optional<Role> role = roleRepository.findById(userDto.getRoleId());
             if (role.isEmpty()) {
                 throw new IllegalArgumentException("Role not found");

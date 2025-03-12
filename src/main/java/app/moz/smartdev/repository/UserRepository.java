@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-public interface UserRepository  extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
     @EntityGraph(attributePaths = {"roles"})
     List<User> findAll();
@@ -17,4 +17,6 @@ public interface UserRepository  extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByUsername(String username);
+
+    Optional<User> findByActivationCode(String activationCode);
 }
