@@ -4,6 +4,7 @@ package app.moz.smartdev.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Table(name = "oauth_token")
 public class OauthToken {
 
@@ -25,6 +27,10 @@ public class OauthToken {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "provider_id", nullable = false)
+    private Provider provider;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String accessToken;

@@ -40,7 +40,6 @@ public class AuthenticationController {
             @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(authenticationService.login(request));
-
     }
 
     @PostMapping("/change-password")
