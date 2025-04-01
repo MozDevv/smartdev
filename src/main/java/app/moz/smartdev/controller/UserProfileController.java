@@ -35,8 +35,7 @@ public class UserProfileController {
                     userProfileDtos,
                     pageNumber,
                     pageSize,
-                    totalCount,
-                    totalPages,
+
                     true,
                     "User profiles retrieved successfully",
                     200
@@ -65,8 +64,7 @@ public class UserProfileController {
                     List.of(userProfileDtos),
                     pageNumber,
                     pageSize,
-                    totalCount,
-                    totalPages,
+
                     true,
                     "User profiles retrieved successfully",
                     200
@@ -82,16 +80,16 @@ public class UserProfileController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseWrapper<UserProfileDto> createProfile(
-            @RequestBody UserProfileDto userProfileDto
+            @RequestBody UserProfileDto userProfileDto,
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize
     ) {
         try {
             UserProfileDto userProfileDto1 = userProfileService.createUserProfile(userProfileDto);
             return ResponseBuilder.createResponseWrapper(
                     List.of(userProfileDto1),
-                    1,
-                    1,
-                    1,
-                    1,
+                    pageNumber,
+                    pageSize,
                     true,
                     "User profile created successfully",
                     201

@@ -32,8 +32,6 @@ public class RolesRepository {
               rolesDtos,
               pageNumber,
               pageSize,
-              totalCount,
-              totalPages,
               true,
               "Roles retrieved successfully",
               200

@@ -24,7 +24,14 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/api/v1/user/**", "/api/v1/integrations/**", "/api/v1/new/clients/**", "/api/github/**", "/api/v1/auth/change-password","/oauth2/authorization/github","/api/github/**",
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                 "/api/v1/user/**",
+                                 "/api/v1/integrations/**",
+                                "/api/v1/new/clients/**",
+                                "/api/github/**",
+                                "/api/v1/auth/change-password",
+                                "/oauth2/authorization/github","/api/github/**",
                                 "/v2/api-docs", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html", "/swagger-ui/**", "/webjars/**", "/swagger-ui/index.html")
                         .permitAll()
                         .anyRequest().authenticated()

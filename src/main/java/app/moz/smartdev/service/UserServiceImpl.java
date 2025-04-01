@@ -81,6 +81,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(UserDto userDto) {
+
+        var user = userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+
+//        user.se
+
         return null;
     }
 

@@ -33,8 +33,7 @@ public class UserController {
                     userDtos,
                     pageNumber,
                     pageSize,
-                    totalCount,
-                    totalPages,
+
                     true,
                     "Users retrieved successfully",
                     200);

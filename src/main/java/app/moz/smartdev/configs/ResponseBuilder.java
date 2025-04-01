@@ -5,10 +5,11 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-
 public class ResponseBuilder {
 
-    public static <T> ResponseWrapper<T> createResponseWrapper(List<T> data, int page, int size, int totalCount, int totalPages, boolean succeeded, String messages, int code) {
+    public static <T> ResponseWrapper<T> createResponseWrapper(List<T> data, int page, int size, boolean succeeded, String messages, int code) {
+        int totalCount = data.size();
+        int totalPages = (int) Math.ceil((double) totalCount / size);
         boolean hasPreviousPage = page > 1;
         boolean hasNextPage = page < totalPages;
 

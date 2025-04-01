@@ -33,7 +33,6 @@ public class AuthenticationService {
         return RandomStringUtils.random(12, true, true) + "!@#";
     }
 
-
     public AuthenticationResponse register(RegisterRequest request) {
         Optional<User> userDto = userRepository.findByEmail(request.getEmail());
 
@@ -77,12 +76,12 @@ public class AuthenticationService {
                 "<p>Dear %s,</p>"
                         + "<p>Thank you for registering with us! Below are your account details:</p>"
                         + "<p>=====================================<br>"
-                        + "🆔  Username: %s<br>"
-                        + "🔒  Temporary Password: %s<br>"
+                        + "Username: %s<br>"
+                        + "Temporary Password: %s<br>"
                         + "=====================================</p>"
-                        + "<p>🔗 Please click the link below to activate your account and set a new password:<br>"
+                        + "<p>Please click the link below to activate your account and set a new password:<br>"
                         + "<a href=\"%s\">%s</a></p>"
-                        + "<p>⚠️ For your security, please change your password after logging in.</p>"
+                        + "<p>For your security, please change your password after logging in.</p>"
                         + "<p>If you did not create this account, please ignore this email.</p>"
                         + "<p>Best regards,<br>Your Company Name</p>",
                 user.getUsername(),
