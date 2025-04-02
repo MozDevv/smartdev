@@ -30,12 +30,12 @@ public class OauthToken {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "provider_id", nullable = false)
-    private Provider provider;
+    private AuthProvider provider;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String accessToken;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String refreshToken;
 
     @Column(nullable = false)

@@ -2,11 +2,9 @@ package app.moz.smartdev.controller;
 
 import app.moz.smartdev.configs.ResponseBuilder;
 import app.moz.smartdev.configs.ResponseWrapper;
-import app.moz.smartdev.dtos.ProviderDto;
-import app.moz.smartdev.service.ProviderService;
+import app.moz.smartdev.dtos.AuthProviderDto;
+import app.moz.smartdev.service.AuthProviderService;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,18 +15,18 @@ import java.util.List;
 
 public class ProviderController {
 
-    private final ProviderService providerService;
+    private final AuthProviderService providerService;
 
     @PostMapping()
-    public ResponseWrapper<ProviderDto> saveProvider(
-            @RequestBody ProviderDto providerDto,
+    public ResponseWrapper<AuthProviderDto> saveProvider(
+            @RequestBody AuthProviderDto providerDto,
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
 
         try {
 
-            ProviderDto provider = providerService.create(providerDto);
+            AuthProviderDto provider = providerService.create(providerDto);
             return ResponseBuilder.createResponseWrapper(
                     List.of(provider),
                     pageNumber,
@@ -39,6 +37,28 @@ public class ProviderController {
             );
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+    @GetMapping()
+    public ResponseWrapper<AuthProviderDto> getAllProviders(
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        try {
+            List<AuthProviderDto> providerDtos = providerService.getProviders();
+            int totalCount = providerDtos.size();
+            int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+            return ResponseBuilder.createResponseWrapper(
+                    providerDtos,
+                    pageNumber,
+                    pageSize,
+                    true,
+                    "Providers retrieved successfully",
+                    200
+            );
+        } catch (Exception e) {
+            return ResponseBuilder.createErrorResponse("Error fetching providers",
+                    null, e.getMessage(), 500);
         }
     }
 

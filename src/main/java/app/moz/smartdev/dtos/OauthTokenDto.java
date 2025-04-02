@@ -15,7 +15,7 @@ import java.util.UUID;
 public class OauthTokenDto {
     private UUID id;
     private UUID userId;
-    private long providerId;
+    private UUID providerId;
     private String accessToken;
     private String refreshToken;
     private String tokenType;

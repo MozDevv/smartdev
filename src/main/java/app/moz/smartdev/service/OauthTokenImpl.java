@@ -1,11 +1,11 @@
 package app.moz.smartdev.service;
 
 import app.moz.smartdev.dtos.OauthTokenDto;
+import app.moz.smartdev.entity.AuthProvider;
 import app.moz.smartdev.entity.OauthToken;
-import app.moz.smartdev.entity.Provider;
 import app.moz.smartdev.entity.User;
+import app.moz.smartdev.repository.AuthProviderRepository;
 import app.moz.smartdev.repository.OauthTokenRepository;
-import app.moz.smartdev.repository.ProviderRepository;
 import app.moz.smartdev.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class OauthTokenImpl implements OauthTokenService {
     private final OauthTokenRepository oauthTokenRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
-    private final ProviderRepository providerRepository;
+    private final AuthProviderRepository providerRepository;
 
 
     @Override
@@ -70,7 +70,7 @@ public class OauthTokenImpl implements OauthTokenService {
         if(user.isEmpty()){
             throw new EntityNotFoundException("User not found");
         }
-        Optional<Provider> provider = providerRepository.findById(oauthToken.getProviderId());
+        Optional<AuthProvider> provider = providerRepository.findById(oauthToken.getProviderId());
         if(provider.isEmpty()){
             throw new EntityNotFoundException("Provider not found");
         }

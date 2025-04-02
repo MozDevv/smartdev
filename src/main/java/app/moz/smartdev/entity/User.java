@@ -59,7 +59,7 @@ public class User implements UserDetails {
     @JoinTable(name = "user_providers",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "provider_id"))
-    private Set<Provider> providers = new HashSet<>();
+    private Set<AuthProvider> providers = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<OauthToken> oauthTokens = new HashSet<>();
@@ -73,6 +73,8 @@ public class User implements UserDetails {
     private String refresh_token;
 
     private String activationCode;
+
+
 
 
     public User() {

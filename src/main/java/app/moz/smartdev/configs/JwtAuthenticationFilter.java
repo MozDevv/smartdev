@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -28,6 +29,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
    private final UserDetailsService userDetailsService;
 
+    private static final List<String> SWAGGER_WHITELIST = List.of(
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/swagger-config",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui/index.html"
+    );
    private final UserRepository userRepository;
     @Override
     protected void doFilterInternal(
@@ -41,23 +53,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
+
         log.info("Processing request for URI: {}", requestURI);
-        if (requestURI.startsWith("/api/v1/auth/") || requestURI.startsWith("/api/v1/user/") ||
-                requestURI.startsWith("/api/v1/integrations/") || requestURI.startsWith("/api/v1/new/clients/") ||
-                requestURI.startsWith("/api/github/") || requestURI.startsWith("/api/v1/auth/change-password") ||
-                requestURI.startsWith("/oauth2/authorization/github") || requestURI.startsWith("/v2/api-docs") ||
-                requestURI.startsWith("/v3/api-docs/") || requestURI.startsWith("/swagger-resources/") ||
-                requestURI.startsWith("/swagger-ui.html") || requestURI.startsWith("/swagger-ui/") ||
-                requestURI.startsWith("/webjars/") || requestURI.startsWith("/swagger-ui/index.html")) {
-            log.info("Skipping authentication for URI: {}", requestURI);
+        if (SWAGGER_WHITELIST.stream().anyMatch(requestURI::startsWith)) {
             filterChain.doFilter(request, response);
             return;
         }
 
+//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+//            log.info("No Bearer token found for URI: {}", requestURI);
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            response.getWriter().write("Unauthorized: No Bearer token found");
+//
+//            return;
+//        }
+        //TODO: Uncomment the above code and comment the below code
+
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.info("No Bearer token found for URI: {}", requestURI);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized: No Bearer token found");
+            filterChain.doFilter(request, response);
             return;
         }
         jwt = authHeader.substring(7);

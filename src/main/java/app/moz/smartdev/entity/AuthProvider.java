@@ -1,12 +1,12 @@
 package app.moz.smartdev.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+
+import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -15,8 +15,8 @@ import lombok.AllArgsConstructor;
 public class AuthProvider {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
     private String providerName;           // e.g., "GitHub", "Google", "Slack"
     private String clientId;               // OAuth Client ID
     private String clientSecret;           // OAuth Client Secret
@@ -26,9 +26,11 @@ public class AuthProvider {
     private String scope;                  // Scopes requested during the OAuth process
     private String userInfoUri;            // (Optional) URL to fetch user profile information
     private String grantType;              // e.g., "authorization_code", "client_credentials"
-    private boolean isActive;              // Flag to enable/disable provider
+    private boolean isActive;
 
-    // Constructor without id
+    private UUID userId;   // Flag to enable/disable provider
+
+    // Add this constructor
     public AuthProvider(String providerName, String clientId, String clientSecret, String authorizationUri, String tokenUri, String redirectUri, String scope, String userInfoUri, String grantType, boolean isActive) {
         this.providerName = providerName;
         this.clientId = clientId;
@@ -41,4 +43,5 @@ public class AuthProvider {
         this.grantType = grantType;
         this.isActive = isActive;
     }
+
 }
