@@ -1,6 +1,7 @@
 package app.moz.smartdev.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class Branch {
     @Id
     @GeneratedValue
     private UUID id;
-
+    @JsonProperty("name")
     private String branchName;
 
     private boolean isDefault = false;

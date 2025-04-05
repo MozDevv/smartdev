@@ -1,7 +1,17 @@
 package app.moz.smartdev.controller;
 
 import app.moz.smartdev.configs.JwtService;
+import app.moz.smartdev.entity.AuthProvider;
+import app.moz.smartdev.entity.OauthToken;
+import app.moz.smartdev.entity.User;
+import app.moz.smartdev.repository.AuthProviderRepository;
+import app.moz.smartdev.repository.OauthTokenRepository;
+import app.moz.smartdev.repository.UserRepository;
+import app.moz.smartdev.service.GitRepoService;
 import app.moz.smartdev.service.GithubService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +26,10 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResp
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -32,7 +42,14 @@ public class GithubController {
     @Autowired
     private DefaultAuthorizationCodeTokenResponseClient tokenResponseClient;
 
+
+
     private final JwtService jwtService;
+    private  final UserRepository userRepository;
+    private final GitRepoService gitRepoService;
+    private final OauthTokenRepository oauthTokenRepository;
+    private final AuthProviderRepository authProviderRepository;
+
 
     private static final String CLIENT_ID = "Ov23ctG6bWv9zmt4gdVu";
     private static final String CLIENT_SECRET = "8ab6a54a99fe8f6862110e4c35f5c528bb532d0a";
@@ -52,15 +69,40 @@ public class GithubController {
         return ResponseEntity.ok("Test successful");
     }
 
+    @PostMapping("/api/github/repositories")
+    public ResponseEntity<String> repositories(@RequestParam(value = "user_id", required = false) String userId) {
+        if (userId != null) {
+            AuthProvider authProvider = authProviderRepository.findByProviderName("GitHub");
+
+            if (authProvider != null) {
+
+                User user = userRepository.findById(UUID.fromString(userId)).orElseThrow(() -> new IllegalArgumentException("User not found"));
+                OauthToken oauthToken = oauthTokenRepository.findOauthTokenByUserAndProvider(user, authProvider);
+                gitRepoService.fetchUserGitHubDataAsync(oauthToken.getAccessToken(), user);
+                return ResponseEntity.ok("Repositories fetched successfully");
+            } else {
+                return ResponseEntity.badRequest().body("Access token not found");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Missing user ID");
+        }
+    }
+
 
     @GetMapping("/api/github/callback")
-    public ResponseEntity<String> saveOAuthToken(@RequestParam("code") String code, @RequestParam(value = "state", required = false) String state, HttpServletRequest request) {
+    public ResponseEntity<String> saveOAuthToken(@RequestParam("code") String code, @RequestParam(value = "state", required = false) String state, HttpServletRequest request) throws JsonProcessingException {
 
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7); // Remove "Bearer " prefix
 
             String userId = jwtService.extractUserId(token);
+
+            if (userId == null) {
+                return ResponseEntity.status(401).body("Unauthorized");
+            }
+            UUID userId2 = UUID.fromString(jwtService.extractUserId(token));
+            User user = userRepository.findById(userId2).orElseThrow(() -> new IllegalArgumentException("User not found"));
 
 
             OAuth2AuthorizationRequest authorizationRequest = OAuth2AuthorizationRequest.authorizationCode()
@@ -111,6 +153,7 @@ public class GithubController {
 
             if (accessToken == null) {
                 throw new IllegalArgumentException("Access token not found in the response");
+
             }
             headers = new HttpHeaders();
             headers.setBearerAuth(accessToken);
@@ -121,7 +164,17 @@ public class GithubController {
                     entity,
                     String.class
             );
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode userJson = objectMapper.readTree(userResponse.getBody());
+            String githubUsername = userJson.get("login").asText();
+
             log.info("Raw user response: {}", userResponse.getBody());
+
+            log.info("Github access token💥❌❗❗❗: {}", accessToken);
+           githubService.saveOAuthToken(accessToken, user);
+
+       //     gitRepoService.fetchUserGitHubDataAsync(accessToken, user, githubUsername);
             return ResponseEntity.ok("Token and user details saved successfully");
         }
         else {

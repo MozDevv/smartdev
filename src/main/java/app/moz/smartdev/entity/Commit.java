@@ -22,8 +22,8 @@ public class Commit {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "repo_id", nullable = false)
-    private Repo repo;
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branch branch;
 
     private String commitSha;
 

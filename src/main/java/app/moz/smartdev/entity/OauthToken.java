@@ -38,7 +38,7 @@ public class OauthToken {
     @Column(nullable = true, columnDefinition = "TEXT")
     private String refreshToken;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String tokenType;
 
     private Timestamp expiresAt;

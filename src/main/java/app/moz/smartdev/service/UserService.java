@@ -20,5 +20,6 @@ public interface UserService {
 
     String activateAccount(String activationCode);
 
+//    String
 
 }
