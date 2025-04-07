@@ -12,6 +12,9 @@ public interface GitRepoRepoistory extends JpaRepository<Repo, UUID>{
     boolean existsByRepoName(String repoName);
 
     Repo findByRepoName(String repoName);
+
+    List<Repo> findByUser(User user);
+
     boolean existsByRepoNameAndUser(String repoName, User user);
 
     boolean existsByGithubRepoId(int githubRepoId);

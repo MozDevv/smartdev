@@ -29,6 +29,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -67,6 +68,15 @@ public class GithubController {
     @GetMapping("/api/github/test")
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("Test successful");
+    }
+
+    @GetMapping("/api/github/user/repositories")
+    public ResponseEntity<Map<String, Object>> getUserRepositories(HttpServletRequest request) {
+        Map<String, Object> response = gitRepoService.getAllUserRepositories(request);
+        if (response.containsKey("error")) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/api/github/repositories")

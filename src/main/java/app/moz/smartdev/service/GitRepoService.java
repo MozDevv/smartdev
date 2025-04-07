@@ -1,5 +1,6 @@
 package app.moz.smartdev.service;
 
+import app.moz.smartdev.configs.JwtService;
 import app.moz.smartdev.dtos.Owner;
 import app.moz.smartdev.entity.*;
 import app.moz.smartdev.entity.CustomUserDetails;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
@@ -33,6 +35,27 @@ public class GitRepoService {
     private final GitRepoRepoistory gitRepoRepoistory;
     private final BranchRepository branchRepository;
     private final CommitRepository commitRepository;
+    private final JwtService jwtService;
+
+    public Map<String, Object> getAllUserRepositories( HttpServletRequest request) {
+
+        User user = jwtService.getUserFromRequest(request);
+
+        try{
+            log.info("Fetching GitHub repositories for user : {}", user.getUsername());
+
+            List<Repo> repositories = gitRepoRepoistory.findByUser(user);
+            log.info("Got {} repositories ", repositories.size());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("repositories", repositories);
+            return response;
+        } catch (Exception e) {
+            log.error("Error fetching GitHub data : {}", e.getMessage());
+            return Collections.emptyMap();
+        }
+
+    }
 
     @Async
     public CompletableFuture<Void> fetchUserGitHubDataAsync(String accessToken, User user) {
@@ -43,35 +66,6 @@ public class GitRepoService {
             List<Repo> repositories = getUserRepositories(accessToken, user);
             log.info("Got {} repositories", repositories.size());
 
-//            for (Repo repo : repositories) {
-//                log.info("Repository: {}", repo.getRepoName());
-//            }
-//
-//            for (Repo repo : repositories) {
-//                log.info("Fetching branches for repo: {}", repo.getRepoName());
-//
-//                List<Branch> branches = getBranches(accessToken, repo.getRepoName(), repo.getOwner().getLogin());
-//                if(branches.isEmpty()) {
-//                    log.warn("No branches found for repository: {}", repo.getRepoName());
-//                    continue;
-//                } else {
-//                    log.info("Got {} branches", branches.size());
-//                }
-//                for (Branch branch : branches) {
-//                    branch.setRepo(repo); // Set the correct Repo object
-//                    log.info("Branch: {}", branch.getBranchName());
-//                }
-//                branchRepository.saveAll(branches); // Save branches to the repository
-//
-//                for (Branch branch : branches) {
-//                    log.info("Fetching commits for branch: {} in repo: {}", branch.getBranchName(), repo.getRepoName());
-//
-//                    List<Commit> commits = getCommits(accessToken, repo.getRepoName(), branch.getBranchName(), user);
-//                    for (Commit commit : commits) {
-//                        log.info("Commit: {}", commit.getCommitMessage());
-//                    }
-//                }
-//            }
 
             log.info("GitHub data fetched successfully for user: {}", user.getUsername());
         } catch (Exception e) {
