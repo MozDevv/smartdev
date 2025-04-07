@@ -38,6 +38,16 @@ public class DataSeeder {
                             "profile email",
                             "https://www.googleapis.com/oauth2/v3/userinfo",
                             "authorization_code",
+                            true),
+                    new AuthProvider("Trello",
+                            "27d1890356f09931470d1d43eafecd9b",
+                            "TrelloClientSecret",
+                            "https://trello.com/1/authorize?expiration=never&name=SmartDev&scope=read,write&response_type=token&key=27d1890356f09931470d1d43eafecd9b&return_url=http://localhost:8080/callback.html",
+                            "https://trello.com/1/OAuthGetAccessToken",
+                            "http://localhost:8080/api/trello/callback",
+                            "read,write",
+                            "https://api.trello.com/1/members/me",
+                            "token",
                             true)
                     // Add more providers as needed
             );

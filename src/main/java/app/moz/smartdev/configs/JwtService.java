@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +18,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Slf4j
@@ -34,6 +36,20 @@ public class JwtService {
         return extractSingleClaim(token, Claims::getSubject);
     }
 
+    public User getUserFromRequest(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7); // Remove "Bearer " prefix
+            String userId = extractUserId(token);
+
+            if (userId != null) {
+                UUID userId2 = UUID.fromString(userId);
+                return userRepository.findById(userId2)
+                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            }
+        }
+        throw new IllegalArgumentException("Unauthorized");
+    }
     public <T> T extractSingleClaim(String token, Function<Claims, T> claimsTFunction) {
         final Claims claims = extractClaims(token);
         return claimsTFunction.apply(claims);
